@@ -9,9 +9,15 @@ import FinanceDataReader as fdr
 import matplotlib.pyplot as plt
 # import koreanize_matplotlib
 import os
+from matplotlib import font_manager, rc
+
+font_path = "C:/Windows/Fonts/malgun.ttf"  # 맑은 고딕
+font_name = font_manager.FontProperties(fname=font_path).get_name()
+rc('font', family=font_name)
+plt.rcParams['axes.unicode_minus'] = False
 
 # my_name = os.getenv("MY_NAME")
-st.header("주가 조회")
+st.header("📊주가 조회")
 
 def get_krx_company_list() -> pd.DataFrame:
     try:
@@ -40,8 +46,15 @@ def get_stock_code_by_company(company_name: str) -> str:
     else:
         raise ValueError(f"'{company_name}'을 찾을 수 없습니다. 종목코드 6자리를 직접 입력해보세요.")
 
+company_df = get_krx_company_list()
+company_list = company_df['회사명'].sort_values().tolist()
+company_name = st.selectbox(
+    "조회할 회사를 선택하세요",
+    options=company_list,
+    index=None,
+    placeholder="회사명을 입력하거나 선택하세요"
+)
 
-company_name = st.text_input('조회할 회사를 입력하세요')
 # https://docs.streamlit.io/develop/api-reference/widgets/st.date_input
 
 today = datetime.datetime.now()
@@ -77,10 +90,48 @@ if confirm_btn:
                 st.dataframe(price_df.tail(10), width="stretch")
 
                 # Matplotlib 시각화
+                # 이동평균선 계산 (먼저!)
+                price_df['MA20'] = price_df['Close'].rolling(20).mean()
+                price_df['MA60'] = price_df['Close'].rolling(60).mean()
+
+                # Matplotlib 시각화
                 fig, ax = plt.subplots(figsize=(12, 5))
-                price_df['Close'].plot(ax=ax, grid=True, color='red')
-                ax.set_title(f"{company_name} 종가 추이", fontsize=15)
-                st.pyplot(fig)
+
+                # 종가
+                ax.plot(
+                    price_df.index,
+                    price_df['Close'],
+                    linewidth=2.5,
+                    label="Close"
+                )
+
+                # 이동평균선
+                ax.plot(
+                    price_df.index,
+                    price_df['MA20'],
+                    linestyle="--",
+                    alpha=0.8,
+                    label="MA20"
+                )
+                ax.plot(
+                    price_df.index,
+                    price_df['MA60'],
+                    linestyle="-.",
+                    alpha=0.8,
+                    label="MA60"
+                )
+
+                ax.set_title(f"{company_name} 종가 추이", fontsize=16)
+                ax.set_xlabel("날짜")
+                ax.set_ylabel("종가 (원)")
+
+                ax.grid(True, linestyle="--", alpha=0.4)
+                ax.legend()
+
+                fig.autofmt_xdate()
+
+                st.pyplot(fig, use_container_width=True)
+
 
                 # 엑셀 다운로드 기능
                 output = BytesIO()
