@@ -10,8 +10,8 @@ import matplotlib.pyplot as plt
 # import koreanize_matplotlib
 import os
 
-my_name = os.getenv("MY_NAME")
-st.header(my_name)
+# my_name = os.getenv("MY_NAME")
+st.header("주가 조회")
 
 def get_krx_company_list() -> pd.DataFrame:
     try:
@@ -40,13 +40,14 @@ def get_stock_code_by_company(company_name: str) -> str:
     else:
         raise ValueError(f"'{company_name}'을 찾을 수 없습니다. 종목코드 6자리를 직접 입력해보세요.")
 
-company_name = st.sidebar.text_input('조회할 회사를 입력하세요')
+
+company_name = st.text_input('조회할 회사를 입력하세요')
 # https://docs.streamlit.io/develop/api-reference/widgets/st.date_input
 
 today = datetime.datetime.now()
 jan_1 = datetime.date(today.year, 1, 1)
 
-selected_dates = st.sidebar.date_input(
+selected_dates = st.date_input(
     '조회할 날짜를 입력하세요',
     (jan_1, today),
     format="MM.DD.YYYY",
@@ -54,7 +55,7 @@ selected_dates = st.sidebar.date_input(
 
 # st.write(selected_dates)
 
-confirm_btn = st.sidebar.button('조회하기') # 클릭하면 True
+confirm_btn = st.button('조회하기') # 클릭하면 True
 
 # --- 메인 로직 ---
 if confirm_btn:
