@@ -9,12 +9,12 @@ import FinanceDataReader as fdr
 import matplotlib.pyplot as plt
 # import koreanize_matplotlib
 import os
-from matplotlib import font_manager, rc
+# from matplotlib import font_manager, rc
 
-font_path = "C:/Windows/Fonts/malgun.ttf"  # 맑은 고딕
-font_name = font_manager.FontProperties(fname=font_path).get_name()
-rc('font', family=font_name)
-plt.rcParams['axes.unicode_minus'] = False
+# font_path = "C:/Windows/Fonts/malgun.ttf"  # 맑은 고딕
+# font_name = font_manager.FontProperties(fname=font_path).get_name()
+# rc('font', family=font_name)
+# plt.rcParams['axes.unicode_minus'] = False
 
 # my_name = os.getenv("MY_NAME")
 st.header("📊주가 조회")
